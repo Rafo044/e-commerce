@@ -10,13 +10,11 @@ object Main {
 
     spark.sparkContext.setLogLevel("ERROR")
     val path = "src/main/resources/data/data.csv"
-    if (path == null) {
-      println("CSV tapılmadı! Yol səhvdir.")
-      System.exit(1)
-    }
-
 
     val df = Reader.loadEvents(spark, path)
-    df.show()
+
+    // Filter ,Cleasing
+    df.filter(row => row.Quantity > 0 and row.UnitPrice > 0)
+    val cleaned = df.na.drop("CustomerID")
   }
 }
