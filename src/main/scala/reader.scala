@@ -1,29 +1,16 @@
 import java.sql.Timestamp
-import org.apache.spark.sql.{SparkSession, Dataset, Encoders}
+import org.apache.spark.sql.{SparkSession, DataFrame, Encoders}
 
 object Reader {
 
-  case class Event(
-    InvoiceNo: String,
-    StockCode: String,
-    Description: String,
-    Quantity: Int,
-    InvoiceDate: Timestamp,
-    UnitPrice: Double,
-    CustomerID: Option[String],
-    Country: String
-  )
 
-  def loadEvents(spark: SparkSession, path: String): Dataset[Event]  = {
+  def loadEvents(spark: SparkSession, path: String): DataFrame = {
 
-    implicit val eventEncoder = Encoders.product[Event]
-
-    val df = spark.read
+    val df: DataFrame = spark.read
       .option("header", "true")
       .option("timestampFormat", "M/d/yyyy H:mm")
-      .schema(Encoders.product[Event].schema)
+      .option("inferSchema", "true")
       .csv(path)
-      .as[Event]
 
       df
   }
