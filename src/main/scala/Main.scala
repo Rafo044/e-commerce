@@ -1,18 +1,26 @@
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
+import readfile.Reader.loadEvents
+import quality.Quality.{analysis, verification}
+
+
+spark.sparkContext.setLogLevel("ERROR")
+val path_csv = "src/main/resources/data/data.csv"
+val path_parquet = "src/main/resources/data/transformed_data.parquet"
+val spark = SparkSession.builder()
+  .appName("MyApp")
+  .master("local[*]")
+  .getOrCreate()
+
+
 
 object Main {
-  def main(args: Array[String]): Unit = {
-    val spark = SparkSession.builder()
-      .appName("MyApp")
-      .master("local[*]")
-      .getOrCreate()
 
+  def qualitycheck(spark: SparkSession) {
+  }
 
-    spark.sparkContext.setLogLevel("ERROR")
-    val path_csv = "src/main/resources/data/data.csv"
-    val path_parquet = "src/main/resources/data/transformed_data.parquet"
+  def analytics(spark: SparkSession, path_csv: String, path_parquet: String): Unit = {
 
     val df = Reader.loadEvents(spark, path_csv)
 
@@ -30,5 +38,10 @@ object Main {
     // Save to parquet
     sorted_df.write.parquet(path_parquet)
     sorted_df.show()
+  }
+
+  def main(args: Array[String]): Unit = {
+    qualitycheck(spark)
+    analytics(spark, path_csv, path_parquet)
   }
 }
